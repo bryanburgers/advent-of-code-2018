@@ -1,4 +1,5 @@
 use std::io::{Read, self};
+use std::collections::HashSet;
 
 fn main() {
     println!("Hello, world!");
@@ -8,10 +9,25 @@ fn main() {
         .expect("Read stdin");
     let buffer = buffer.trim();
 
-    let result = buffer.split("\n")
+    let input : Vec<i32> = buffer.split("\n")
         .map(|i| i.trim())
         .map(|i| i.parse::<i32>().unwrap())
-        .fold(0, |acc, i| acc + i);
+        .collect();
 
-    println!("{}", result);
+    let result_a = input.iter().fold(0, |acc, i| acc + i);
+    println!("{}", result_a);
+
+    let mut frequency = 0;
+    let mut frequencies = HashSet::new();
+    'outer: loop {
+        for i in &input {
+            frequency += *i;
+            if frequencies.contains(&frequency) {
+                break 'outer;
+            }
+            frequencies.insert(frequency);
+        }
+    }
+
+    println!("{}", frequency);
 }
