@@ -1,5 +1,6 @@
 #[derive(Eq, PartialEq, Debug)]
 pub struct Square {
+    pub id: Option<usize>,
     left: usize,
     top: usize,
     width: usize,
@@ -9,6 +10,7 @@ pub struct Square {
 impl Square {
     pub fn new(left: usize, top: usize, width: usize, height: usize) -> Square {
         Square {
+            id: None,
             left,
             top,
             width,
@@ -22,10 +24,13 @@ impl Square {
         let position = parts2[0];
         let size = parts2[1];
 
+        let id = parts1[0][1..].parse::<usize>().unwrap();
+
         let positions: Vec<usize> = position.split(",").map(|x| x.parse::<usize>().unwrap()).collect();
         let sizes: Vec<usize> = size.split("x").map(|x| x.parse::<usize>().unwrap()).collect();
 
         Some(Square {
+            id: Some(id),
             left: positions[0],
             top: positions[1],
             width: sizes[0],
@@ -58,7 +63,7 @@ impl Square {
             return None;
         }
 
-        Some(Square { left: max_left, top: max_top, width: min_right - max_left, height: min_bottom - max_top })
+        Some(Square { id: None, left: max_left, top: max_top, width: min_right - max_left, height: min_bottom - max_top })
     }
 
     pub fn points(&self) -> SquareIterator {
@@ -127,7 +132,7 @@ mod tests {
 
         let intersection = square1.intersect(&square2);
 
-        assert_eq!(intersection, Some(Square { left: 3, top: 3, width: 2, height: 2 }));
+        assert_eq!(intersection, Some(Square { id: None, left: 3, top: 3, width: 2, height: 2 }));
 
         let square1 = Square::new(3, 1, 4, 4);
         let square2 = Square::new(5, 5, 2, 2);
@@ -141,6 +146,6 @@ mod tests {
     fn test_parse() {
         let square = Square::parse("#1 @ 1,3: 4x5");
 
-        assert_eq!(square, Some(Square { left: 1, top: 3, width: 4, height: 5 }));
+        assert_eq!(square, Some(Square { id: Some(1), left: 1, top: 3, width: 4, height: 5 }));
     }
 }

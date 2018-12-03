@@ -31,4 +31,21 @@ fn main() {
     }
 
     println!("{}", overlaps.len());
+
+    for s1 in &squares {
+        let mut found_intersection = false;
+        for s2 in &squares {
+            if s1.id == s2.id {
+                continue;
+            }
+
+            if let Some(_) = s1.intersect(s2) {
+                found_intersection = true;
+            }
+        }
+
+        if !found_intersection {
+            println!("{}", s1.id.unwrap());
+        }
+    }
 }
