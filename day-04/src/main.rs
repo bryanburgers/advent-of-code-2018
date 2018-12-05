@@ -38,6 +38,17 @@ fn main() {
     let chosen_minute = info.most_frequent_minute();
 
     println!("{}", chosen_id * chosen_minute);
+
+    let (chosen_id, chosen_minute, _frequency) = guards.iter()
+        .map(|(id, info)| {
+            let minute = info.most_frequent_minute();
+            let frequency = info.minutes_asleep.get(&minute).unwrap();
+            (id, minute, frequency)
+        })
+        .max_by_key(|(_id, _minute, frequency)| *frequency)
+        .unwrap();
+
+    println!("{}", chosen_id * chosen_minute);
 }
 
 #[derive(Debug)]
