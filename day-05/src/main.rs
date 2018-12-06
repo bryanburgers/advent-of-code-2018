@@ -3,26 +3,51 @@ use std::collections::VecDeque;
 
 
 fn main() {
+    let mut buffer = String::new();
+
+    io::stdin().read_to_string(&mut buffer)
+        .expect("Read stdin");
+    let buffer = buffer.trim();
+
+    let answer_1 = react_polymer(buffer.bytes());
+
+    println!("{}", answer_1.len());
+
+    let mut min = answer_1.len();
+    for i in b'A'..=b'Z' {
+        let new_iterator = buffer.bytes()
+            .filter(|letter| *letter != i && *letter != (i + b'a' - b'A'));
+
+        let reacted = react_polymer(new_iterator);
+        if reacted.len() < min {
+            min = reacted.len();
+        }
+    }
+    println!("{}", min);
+}
+
+fn react_polymer(polymer: impl IntoIterator<Item=u8>) -> String {
     let mut stack = VecDeque::new();
 
     let mut current = 0;
 
-    for byte in io::stdin().bytes() {
-        let mut byte = byte.expect("Input shouldn't be None");
-        if byte < b'A' {
-            continue;
-        }
-
+    for byte in polymer {
         if react(byte, current) {
-            current = stack.pop_back().expect("Expected stack to contain values");
+            current = stack.pop_back().unwrap_or(0);
         }
         else {
-            stack.push_back(current);
+            if current > 0 {
+                stack.push_back(current);
+            }
             current = byte;
         }
     }
 
-    println!("{}", stack.len());
+    stack.push_back(current);
+
+    let x: Vec<u8> = stack.iter().map(|x| *x).collect();
+    let s = std::str::from_utf8(x.as_ref()).unwrap();
+    s.to_owned()
 }
 
 fn print_state(stack: &VecDeque<u8>, current: u8, read: u8) {
