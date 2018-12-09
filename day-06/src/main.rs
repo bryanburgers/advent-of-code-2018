@@ -3,6 +3,7 @@ use std::collections::{HashSet, HashMap};
 
 const min: i32 = -300;
 const max: i32 = 600;
+const safe_distance: i32 = 10000;
 
 fn main() {
     let mut buffer = String::new();
@@ -47,6 +48,22 @@ fn main() {
 
     println!("{}", *items[0].1);
 
+    let mut safe_region_size = 0;
+    for y in min..=max {
+        let is_edge = y == min || y == max;
+        for x in min..=max {
+            let is_edge = is_edge || x == min || x == max;
+
+            let point = (x, y);
+            let total_distance = total_distance(&input, &point);
+
+            if total_distance < safe_distance {
+                safe_region_size += 1;
+            }
+        }
+    }
+
+    println!("{}", safe_region_size);
 }
 
 type Point = (i32, i32);
@@ -94,4 +111,14 @@ fn closest<'a>(list: &'a Vec<Coordinate>, point: &Point) -> Option<&'a Coordinat
     }
 
     closest_coordinate
+}
+
+fn total_distance(list: &Vec<Coordinate>, point: &Point) -> i32 {
+    let mut total = 0;
+    for coord in list {
+        let distance = coord.manhatten_distance(point);
+        total += distance;
+    }
+
+    total
 }
