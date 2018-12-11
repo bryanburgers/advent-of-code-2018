@@ -14,6 +14,7 @@ fn main() {
 
     let node = Node::parse(&input[..]);
     println!("{:?}", node.metadata_sum());
+    println!("{:?}", node.value());
 }
 
 #[derive(Debug, Clone)]
@@ -61,5 +62,26 @@ impl Node {
         let metadata_sum = self.metadata.iter().fold(0, |acc, i| acc + i);
         let children_sum = self.children.iter().fold(metadata_sum, |acc, child| acc + child.metadata_sum());
         children_sum
+    }
+
+    fn value(&self) -> usize {
+        if self.children.len() == 0 {
+            self.metadata.iter().fold(0, |acc, i| acc + i)
+        }
+        else {
+            let mut sum = 0;
+            for i in &self.metadata {
+                if *i == 0 {
+                    continue
+                }
+                let index = *i - 1;
+                if index >= self.children.len() {
+                    continue
+                }
+                let child = &self.children[index];
+                sum += child.value();
+            }
+            sum
+        }
     }
 }
